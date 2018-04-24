@@ -76,9 +76,8 @@ app.setupCanvas = function () {
 
   sendBtn.addEventListener("click", function(){
     chatbox.innerHTML = textField.value;
+    app.publish(textField.value);
 });
-
-//app.publish(msg);
 }
 
 app.setupConnection = function () {
