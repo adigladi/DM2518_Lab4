@@ -12,6 +12,7 @@ var port = 1884
 app.connected = false
 app.ready = false
 
+
 app.uuid = getUUID()
 
 function getUUID () {
@@ -71,12 +72,30 @@ app.onReady = function () {
 
 app.setupCanvas = function () {
   var chatbox = document.getElementById('chatbox');
-  var textField = document.getElementById('textField')
+  var textField = document.getElementById('textField');
+  var userField = document.getElementById('userField');
   var sendBtn = document.getElementById('sendBtn');
+  var enterBtn = document.getElementById('enterBtn');
+  var welcomePage = document.getElementById('welcome');
+  var mainPage = document.getElementById('main');
+
+  var userName = "Adi";
+  
+  //mainPage.style.display = 'none';
+  welcomePage.style.display = 'none';
+  enterBtn.addEventListener("click", function(){
+    userName = userField.value;
+    welcomePage.style.display = 'none';
+    mainPage.style.display = 'block';
+  });
 
   sendBtn.addEventListener("click", function(){
-    chatbox.innerHTML = textField.value;
-    app.publish(textField.value);
+    if (app.connected) {
+      var message = textField.value;
+      textField.value = "";
+      var msg = JSON.stringify('<div id="chatBubble"><p>' + userName + ':</p><h2>' + message + '</h2></div>')
+      app.publish(msg);
+    }
 });
 }
 
@@ -96,7 +115,7 @@ app.setupConnection = function () {
 app.publish = function (json) {
   var message = new Paho.MQTT.Message(json)
   message.destinationName = app.pubTopic
-  app.client.send(message)
+  app.client.send(message);
 }
 
 app.subscribe = function () {
@@ -110,8 +129,8 @@ app.unsubscribe = function () {
 }
 
 app.onMessageArrived = function (message) {
-  var o = JSON.parse(message.payloadString)
-  chatbox.innerHTML = message;
+  var o = JSON.parse(message.payloadString);
+  chatbox.innerHTML += o;
 }
 
 app.onConnect = function (context) {
@@ -133,7 +152,7 @@ app.onConnectionLost = function (responseObject) {
 app.status = function (s) {
   console.log(s)
   var info = document.getElementById('info')
-  info.innerHTML = s
+  //info.innerHTML = s
 }
 
 app.initialize()
