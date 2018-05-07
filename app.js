@@ -81,8 +81,8 @@ app.setupCanvas = function () {
 
   var userName = "Adi";
   
-  //mainPage.style.display = 'none';
-  welcomePage.style.display = 'none';
+  mainPage.style.display = 'none';
+  //welcomePage.style.display = 'none';
   enterBtn.addEventListener("click", function(){
     userName = userField.value;
     welcomePage.style.display = 'none';
@@ -104,7 +104,10 @@ app.setupConnection = function () {
   app.client = new Paho.MQTT.Client(host, port, app.uuid)
   app.client.onConnectionLost = app.onConnectionLost
   app.client.onMessageArrived = app.onMessageArrived
+  var last_will = new Paho.MQTT.Message(JSON.stringify('Goodbye, I was disconnected!'))
+  last_will.destinationName = 'Madison/' + app.uuid + '/evt'
   var options = {
+    willMessage: last_will,
     useSSL: true,
     onSuccess: app.onConnect,
     onFailure: app.onConnectFailure
